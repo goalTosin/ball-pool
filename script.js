@@ -101,7 +101,7 @@ class Ball {
   }
 }
 
-Ball.defaultRad = 50;
+Ball.defaultRad = 10;
 
 class Pool {
   constructor(canvas) {
