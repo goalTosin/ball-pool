@@ -15,26 +15,27 @@ function randColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
+let ballRadius = 10;
+let bigBallRadius = 10;
+
 class Ball {
   constructor(x, y) {
     this.x = x;
     this.y = y;
     this.vx = 0;
     this.vy = 0;
-    this.defaultRad = Ball.defaultRad;
-    this.r = this.defaultRad;
     this.b = 0.5;
     this.static = false;
     this.color = "blue";
     // this.color = randColor()
   }
   collidesWith(ball) {
-    return Math.hypot(this.x - ball.x, this.y - ball.y) < this.r + ball.r;
+    return Math.hypot(this.x - ball.x, this.y - ball.y) < ballRadius * 2;
   }
   respondWithCollision(ball) {
     const angle = Math.atan2(this.y - ball.y, this.x - ball.x);
     const dist =
-      (this.r + ball.r - Math.hypot(this.x - ball.x, this.y - ball.y)) / 2;
+      (ballRadius * 2 - Math.hypot(this.x - ball.x, this.y - ball.y)) / 2;
     this.x += Math.cos(angle) * dist;
     this.y += Math.sin(angle) * dist;
     this.vx *= 0.99;
@@ -48,12 +49,16 @@ class Ball {
 
   draw(ctx) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
-    ctx.fillStyle += "a0";
-    ctx.lineWidth = 3
-    ctx.strokeStyle = 'black'
-    ctx.stroke()
+    ctx.arc(this.x, this.y, ballRadius, 0, Math.PI * 2);
+    if (this.static) {
+      ctx.fillStyle = 'green'
+    } else {
+      ctx.fillStyle = this.color;
+      ctx.fillStyle += "a0";
+      }
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "black";
+    ctx.stroke();
     ctx.fill();
   }
 
@@ -70,38 +75,36 @@ class Ball {
 
   collidesWithWall(w, h) {
     return (
-      this.x - this.r < 0 ||
-      this.x + this.r > w ||
-      this.y - this.r < 0 ||
-      this.y + this.r > h
+      this.x - ballRadius < 0 ||
+      this.x + ballRadius > w ||
+      this.y - ballRadius < 0 ||
+      this.y + ballRadius > h
     );
   }
 
   wallResponse(w, h) {
-    if (this.x - this.r < 0) {
-      this.x = this.r;
+    if (this.x - ballRadius < 0) {
+      this.x = ballRadius;
       this.vx *= -this.b;
     }
-    if (this.x + this.r > w) {
-      this.x = w - this.r;
+    if (this.x + ballRadius > w) {
+      this.x = w - ballRadius;
       this.vx *= -this.b;
     }
-    if (this.y - this.r < 0) {
-      this.y = this.r;
+    if (this.y - ballRadius < 0) {
+      this.y = ballRadius;
       this.vy *= -this.b;
     }
-    if (this.y + this.r > h) {
-      this.y = h - this.r;
+    if (this.y + ballRadius > h) {
+      this.y = h - ballRadius;
       this.vy *= -this.b;
     }
   }
 
   isPointOn(x, y) {
-    return Math.hypot(this.x - x, this.y - y) <= this.r;
+    return Math.hypot(this.x - x, this.y - y) <= ballRadius;
   }
 }
-
-Ball.defaultRad = 10;
 
 class Pool {
   constructor(canvas) {
@@ -115,27 +118,25 @@ class Pool {
    */
   setup() {
     this.sizeCanvas();
-    this.ballRadius = Ball.defaultRad;
-    let nb = 0; //Math.floor(this.canvas.width / this.ballRadius / 2) - 2;
-    let gap = 10;
+    let nb = Math.floor(this.canvas.width / ballRadius / 2) - 2;
     this.balls = Array.from({ length: nb }, (v, i) => {
       const ball = new Ball(
-        i * this.ballRadius * 2 + this.canvas.width / 2 - nb * this.ballRadius,
+        i * ballRadius * 2 + this.canvas.width / 2 - nb * ballRadius,
         10
       );
       return ball;
     });
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 0; i++) {
       for (let j = 0; j < 4; j++) {
         this.balls.push(
           new Ball(
-            i * this.ballRadius * 2 + this.ballRadius,
-            j * this.ballRadius * 2 + this.ballRadius
+            i * ballRadius * 2 + ballRadius,
+            j * ballRadius * 2 + ballRadius
           )
         );
       }
     }
-    this.debug = true
+    this.debug = true;
     this.gravity = 0.4;
     this.additionBallCount = 3;
     this.pickedBallI = -1;
@@ -164,9 +165,9 @@ class Pool {
     return document.getElementById("delete-area").classList.contains("show");
   }
   addBall(x, y, ballCount) {
-    const startX = -(ballCount * this.ballRadius * 2) / 2;
+    const startX = -(ballCount * ballRadius * 2) / 2;
     for (let i = 0; i < ballCount; i++) {
-      this.balls.push(new Ball(i * this.ballRadius * 2 + startX + x, y));
+      this.balls.push(new Ball(i * ballRadius * 2 + startX + x, y));
     }
   }
   removeBall(i) {
@@ -233,10 +234,7 @@ class Pool {
       const ball = this.balls[i];
       ball.draw(this.ctx);
       if (ball.static) {
-        ball.r = 40;
         continue;
-      } else {
-        ball.r = this.ballRadius;
       }
       if (ball.collidesWithWall(this.canvas.width, this.canvas.height)) {
         // console.log("collides with a wall");
@@ -249,6 +247,9 @@ class Pool {
     }
     for (let i = 0; i < this.balls.length; i++) {
       const ball = this.balls[i];
+      if (ball.static) {
+        continue;
+      }
       for (let j = 0; j < this.balls.length; j++) {
         const ball2 = this.balls[j];
         if (ball !== ball2) {
@@ -285,15 +286,14 @@ const clearButton = document.getElementById("clear-button");
 const touch = document.querySelector(".touch");
 
 ballRadiusRange.addEventListener("input", () => {
-  pool.ballRadius = ballRadiusRange.valueAsNumber;
+  ballRadius = ballRadiusRange.valueAsNumber;
 });
 
 gravityRange.addEventListener("input", () => {
   pool.gravity = gravityRange.valueAsNumber;
 });
 
-additionCountRange.max =
-  Math.floor(pool.canvas.width / pool.ballRadius / 2) - 2;
+additionCountRange.max = Math.floor(pool.canvas.width / ballRadius / 2) - 2;
 additionCountRange.addEventListener("input", () => {
   pool.additionBallCount = additionCountRange.valueAsNumber;
 });
