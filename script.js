@@ -142,7 +142,7 @@ class Pool {
     this.pickedBall = null;
     this.canvas.addEventListener("mousemove", this.moveBall.bind(this));
     this.canvas.addEventListener("mouseup", this.dropBall.bind(this));
-    this.canvas.addEventListener("mousedown", this.pickBall.bind(this));
+    this.canvas.addEventListener("mousedown", this.pickOrMakeBall.bind(this));
     addEventListener("resize", this.sizeCanvas.bind(this));
     addEventListener(
       "keydown",
@@ -164,9 +164,9 @@ class Pool {
     return document.getElementById("delete-area").classList.contains("show");
   }
   addBall(x, y, ballCount) {
-    const startX = -(ballCount * 20) / 2;
+    const startX = -(ballCount * this.ballRadius * 2) / 2;
     for (let i = 0; i < ballCount; i++) {
-      this.balls.push(new Ball(i * 20 + startX + x, y));
+      this.balls.push(new Ball(i * this.ballRadius * 2 + startX + x, y));
     }
   }
   removeBall(i) {
@@ -191,7 +191,7 @@ class Pool {
       this.pickBallI = -1;
     }
   }
-  pickBall(e) {
+  pickOrMakeBall(e) {
     const ex = e.clientX;
     const ey = e.clientY;
     const mouseX = ex - this.canvas.offsetLeft;
