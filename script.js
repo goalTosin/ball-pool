@@ -186,7 +186,7 @@ class Pool {
       if (this.showDeleteArea === true) {
         this.showDeleteArea = false;
       }
-      if (Math.hypot(this.canvas.width / 2 - mouseX, mouseY) <= 300) {
+      if (Math.hypot(this.canvas.width / 2 - mouseX, mouseY) <= 100) {
         this.removeBall(this.pickBallI);
       }
       this.pickBallI = -1;
