@@ -2,7 +2,7 @@
 Simple ball pool 2d simulation. Complete with manual ball creation, debugging and live collision simulation.
 
 # Play
-This game is available for immediate play [here](play)
+This game is available for immediate play [here][play]
 
 # Features 
 - Gravity simulation
