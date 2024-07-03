@@ -2,7 +2,7 @@
 Simple ball pool 2d simulation. Complete with manual ball creation, debugging and live collision simulation.
 
 # Play
-Soon, you'll be able to play this game
+This game is available for immediate play [here](play)
 
 # Features 
 - Gravity simulation
@@ -10,8 +10,10 @@ Soon, you'll be able to play this game
 - Gravity, Addition Count and Ball radius changing
 - Cute and simple UI
 
-# Screenshots
-Soon, we'll put some screenshots here
+# Screenshots/
+![Screenshot](https://github.com/goalTosin/ball-pool/blob/main/images/Screenshot from 2024-07-03 19-40-02.png)
 
 # Social
 Don't just leave, leave a star ⭐ 🤩
+
+[play]: https://goaltosin.github.io/ball-pool/
